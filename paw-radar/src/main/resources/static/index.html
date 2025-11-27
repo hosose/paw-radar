@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멍멍 레이더 - 로그인</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+        h1 { color: #333; margin-bottom: 1.5rem; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h1>🐶 멍멍 레이더</h1>
+    <input type="text" id="username" placeholder="아이디 (예: me)" required>
+    <input type="password" id="password" placeholder="비밀번호 (예: 1234)" required>
+    <button onclick="login()">로그인</button>
+    <button onclick="joinSample()" style="background-color: #2196F3;">(테스트용) 바로 가입</button>
+</div>
+
+<script>
+    // 로그인 함수
+    async function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // FormData로 서버에 전송 (@RequestParam 형식)
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        try {
+            const response = await fetch('/api/walkers/login', {
+                method: 'POST',
+                body: formData
+            });
+
+            const text = await response.text();
+
+            if (response.ok) {
+                alert("환영합니다! " + text);
+                // 로그인 성공 시 추천 페이지로 이동 (다음 단계에서 만들 파일)
+                window.location.href = '/list.html'; 
+            } else {
+                alert("로그인 실패: " + text);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert("서버 오류가 발생했습니다.");
+        }
+    }
+
+    // 테스트 편의를 위한 즉시 가입 함수
+    async function joinSample() {
+        const formData = new FormData();
+        formData.append('name', '뉴비');
+        formData.append('username', 'new');
+        formData.append('password', '1234');
+        formData.append('lat', 37.4979);
+        formData.append('lon', 127.0276);
+
+        await fetch('/api/walkers/join', { method: 'POST', body: formData });
+        alert("아이디: new / 비번: 1234 로 가입되었습니다. 로그인해보세요!");
+    }
+</script>
+
+</body>
+</html>

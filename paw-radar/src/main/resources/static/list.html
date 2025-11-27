@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>산책 친구 추천</title>
+    <style>
+        body { padding: 20px; font-family: sans-serif; background-color: #f9f9f9; }
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid #4CAF50;
+        }
+        .score { float: right; font-weight: bold; color: #e91e63; font-size: 1.2em; }
+        .info { color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h2>📍 내 주변 산책 친구 추천 (Top 3)</h2>
+    <div id="list-area">로딩 중...</div>
+
+    <script>
+        // 페이지 열리자마자 데이터 가져오기
+        window.onload = async function() {
+            // 테스트용 하드코딩 데이터 (나: ID 1번)
+            const myId = 1; 
+            const lat = 37.4979; 
+            const lon = 127.0276;
+
+            try {
+                const response = await fetch(`/api/walkers/recommend?myId=${myId}&lat=${lat}&lon=${lon}`);
+                const data = await response.json();
+
+                const listArea = document.getElementById('list-area');
+                listArea.innerHTML = '';
+
+                data.forEach(walker => {
+                    const html = `
+                        <div class="card">
+                            <span class="score">${walker.matchScore}점</span>
+                            <h3>🐶 ${walker.name} <small>(${walker.dogSize})</small></h3>
+                            <div class="info">거리: ${walker.distanceMeters}m</div>
+                        </div>
+                    `;
+                    listArea.innerHTML += html;
+                });
+            } catch (e) {
+                alert("목록을 불러오는데 실패했습니다.");
+            }
+        };
+    </script>
+</body>
+</html>
