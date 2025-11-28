@@ -46,6 +46,9 @@ dependencies {
 	
 	//api 명세서
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+	
+	//스프링 데이터 Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
