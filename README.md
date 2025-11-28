@@ -1,6 +1,12 @@
 # 🐶 멍멍 레이더 (Paw Radar)
 > **위치 기반(LBS) 반려견 산책 친구 실시간 매칭 서비스**
 
+![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6.x-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-24.0-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
 ## 📖 프로젝트 소개
 **"우리 강아지와 딱 맞는 산책 친구를 찾을 수 없을까?"** 라는 고민에서 시작된 MVP 프로젝트입니다.
 사용자의 현재 위치(위도/경도)를 기반으로 반경 3km 이내의 산책 친구를 탐색하고, 거리와 견종 크기(대/중/소)를 고려한 **가중치 매칭 알고리즘**을 통해 최적의 파트너를 추천합니다.
@@ -8,29 +14,40 @@
 레거시 환경(Docker Toolbox)과 최신 기술 스택(Spring Boot 3.4)을 통합하는 과정에서 발생한 다양한 인프라 및 프레임워크 이슈를 해결하며 안정적인 백엔드 시스템을 구축했습니다.
 
 ## 🛠 기술 스택 (Tech Stack)
-### Backend
-* **Language:** Java 17
-* **Framework:** Spring Boot 3.4.0
+### Backend & Security
+* **Core:** Java 17, Spring Boot 3.4.0
+* **Security:** Spring Security (Custom AuthenticationFilter, BCrypt 암호화)
+* **Database:** MySQL 8.0 (Docker Container)
 * **ORM:** Spring Data JPA (Hibernate 6.x)
-* **Security:** Spring Security (BCrypt Encryption)
-* **Build Tool:** Gradle
+* **API Docs:** SpringDoc (Swagger UI)
 
-### Infrastructure & Database
-* **Database:** MySQL 8.0 (Spatial Index 적용)
-* **Infrastructure:** Docker, Docker Toolbox (VirtualBox Environment)
+### Infrastructure
+* **Environment:** Docker Toolbox (VirtualBox 기반 레거시 환경 대응)
+* **Deployment:** Docker Containerization
 
 ### Frontend (MVP)
-* **Tech:** HTML5, CSS3, Vanilla JavaScript (Fetch API)
+* **Map Visualization:** Kakao Maps API
+* **Client:** HTML5, Vanilla JavaScript (Fetch API)
 
-## 💡 핵심 기능 (Key Features)
-1.  **LBS 위치 기반 검색 (Location Based Service)**
-    * MySQL 8.0의 공간 함수(`ST_Distance_Sphere`)를 활용하여, 애플리케이션 레벨의 연산 부하 없이 DB단에서 반경 3km 이내 사용자를 고속으로 필터링.
-2.  **가중치 기반 매칭 알고리즘 (Weighted Scoring)**
-    * 단순 거리순 정렬을 넘어선 사용자 경험(UX) 중심 알고리즘 구현.
-    * **거리 점수** (가까울수록 고득점) + **궁합 점수** (견종 크기가 같으면 가산점)를 합산하여 추천 우선순위 산정.
-3.  **사용자 인증 시스템**
-    * Spring Security Filter Chain을 커스터마이징하여 API 서버에 적합한 보안 설정 적용.
-    * `BCryptPasswordEncoder`를 이용한 비밀번호 단방향 암호화 저장 및 검증.
+## 💡 핵심 구현 기능 (Key Features)
+
+### 1. 📍 고성능 LBS 위치 검색
+* **Spatial Indexing:** MySQL의 공간 함수(`ST_Distance_Sphere`)를 활용하여 애플리케이션 부하 없이 DB 레벨에서 반경 3km 데이터를 고속 필터링.
+* **최적화:** 단순 위/경도 비교가 아닌, 지구 구면 거리를 고려한 정밀 계산 적용.
+
+### 2. 🧠 가중치 기반 매칭 알고리즘 (Matching Service)
+* 단순 거리순 정렬을 넘어선 **가중치 점수(Weighted Scoring)** 시스템 도입.
+    * **거리 점수:** 3km 내에서 가까울수록 높은 점수 부여.
+    * **궁합 점수:** 사용자의 반려견 크기(대/중/소)가 일치할 경우 가산점 부여 (안전한 산책 보장).
+
+### 3. 🔐 사용자 보안 시스템 (Spring Security)
+* **인증/인가(Auth):** `SecurityFilterChain`을 커스터마이징하여 API 별 접근 권한 제어.
+* **비밀번호 보안:** `BCryptPasswordEncoder`를 적용하여 단방향 암호화 저장.
+* **예외 처리:** 인증되지 않은 사용자의 API 접근 시, `AuthenticationEntryPoint`를 통해 로그인 페이지로 리다이렉트 처리.
+
+### 4. 🗺️ 시각화 및 문서화
+* **Kakao Map 연동:** 추천된 산책 친구의 위치를 지도 마커(Marker)와 인포윈도우로 시각화.
+* **Swagger 도입:** 프론트엔드 협업을 위한 API 명세서 자동화 (`/swagger-ui/index.html`).
 
 ## 🚀 트러블 슈팅 (Troubleshooting & Challenges)
 > **개발 과정에서 마주친 주요 기술적 난관과 이를 해결한 과정입니다.**
