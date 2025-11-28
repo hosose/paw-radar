@@ -92,6 +92,8 @@ docker run -d \
 * **웹 브라우저:** `http://localhost:8080` 접속
 * **테스트 계정:** 아이디 `me` / 비밀번호 `1234`
 * **기능 확인:** 로그인 후 내 주변 3km 이내의 추천 산책 친구 목록 확인.
+  <img width="1916" height="953" alt="결과값" src="https://github.com/user-attachments/assets/1dd0f37f-65e8-42b7-9f55-e7e9fa98b965" />
+
 
 ---
 
