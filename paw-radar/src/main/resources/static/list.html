@@ -2,29 +2,46 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>산책 친구 추천</title>
+    <title>산책 친구 찾기 (지도)</title>
     <style>
-        body { padding: 20px; font-family: sans-serif; background-color: #f9f9f9; }
+        body { margin: 0; padding: 0; font-family: sans-serif; }
+        #map { width: 100%; height: 50vh; } /* 지도를 화면 절반 차지하게 */
+        .container { padding: 20px; background-color: #f9f9f9; height: 50vh; overflow-y: auto; }
         .card {
-            background: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-left: 5px solid #4CAF50;
+            background: white; padding: 15px; margin-bottom: 10px;
+            border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid #4CAF50; cursor: pointer;
         }
-        .score { float: right; font-weight: bold; color: #e91e63; font-size: 1.2em; }
-        .info { color: #666; font-size: 0.9em; }
+        .card:hover { background-color: #f0f8f0; }
+        .score { float: right; font-weight: bold; color: #e91e63; }
     </style>
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=407503af1dc64fb186371b96a0168a25"></script>
 </head>
 <body>
-    <h2>📍 내 주변 산책 친구 추천 (Top 3)</h2>
-    <div id="list-area">로딩 중...</div>
+
+    <div id="map"></div>
+
+    <div class="container">
+        <h2>📍 내 주변 추천 친구</h2>
+        <div id="list-area">로딩 중...</div>
+    </div>
 
     <script>
-        // 페이지 열리자마자 데이터 가져오기
+        var map;
+        var markers = [];
+
         window.onload = async function() {
-            // 테스트용 하드코딩 데이터 (나: ID 1번)
+            // 1. 지도 생성 (초기 위치: 강남역)
+            var container = document.getElementById('map');
+            var options = { center: new kakao.maps.LatLng(37.4979, 127.0276), level: 5 };
+            map = new kakao.maps.Map(container, options);
+
+            // 내 위치 마커 (빨간색으로 표시하고 싶지만 기본 마커 사용)
+            var myMarker = new kakao.maps.Marker({ position: new kakao.maps.LatLng(37.4979, 127.0276) });
+            myMarker.setMap(map);
+
+            // 2. 데이터 가져오기
             const myId = 1; 
             const lat = 37.4979; 
             const lon = 127.0276;
@@ -37,19 +54,38 @@
                 listArea.innerHTML = '';
 
                 data.forEach(walker => {
+                    // 3. 리스트 추가
                     const html = `
-                        <div class="card">
+                        <div class="card" onclick="moveTo(${walker.latitude}, ${walker.longitude})">
                             <span class="score">${walker.matchScore}점</span>
                             <h3>🐶 ${walker.name} <small>(${walker.dogSize})</small></h3>
-                            <div class="info">거리: ${walker.distanceMeters}m</div>
+                            <div>거리: ${walker.distanceMeters}m</div>
                         </div>
                     `;
                     listArea.innerHTML += html;
+
+                    // 4. 지도에 마커 찍기
+                    var markerPosition  = new kakao.maps.LatLng(walker.latitude, walker.longitude); 
+                    var marker = new kakao.maps.Marker({ position: markerPosition });
+                    marker.setMap(map);
+
+                    // 마커에 이름 표시 (인포윈도우)
+                    var iwContent = `<div style="padding:5px;">${walker.name} <br><small>${walker.matchScore}점</small></div>`;
+                    var infowindow = new kakao.maps.InfoWindow({ position : markerPosition, content : iwContent });
+                    infowindow.open(map, marker);
                 });
+
             } catch (e) {
-                alert("목록을 불러오는데 실패했습니다.");
+                console.error(e);
+                alert("데이터 로딩 실패 (API 키를 확인했나요?)");
             }
         };
+
+        // 리스트 클릭 시 해당 위치로 지도 이동
+        function moveTo(lat, lon) {
+            var moveLatLon = new kakao.maps.LatLng(lat, lon);
+            map.panTo(moveLatLon);
+        }
     </script>
 </body>
 </html>

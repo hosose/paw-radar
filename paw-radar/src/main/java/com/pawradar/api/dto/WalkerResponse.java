@@ -12,12 +12,16 @@ public class WalkerResponse {
     private DogSize dogSize;
     private double distanceMeters; // 나와의 거리
     private int matchScore;        // 매칭 점수 (높을수록 추천)
+    private Double latitude;
+    private Double longitude;
 
     public WalkerResponse(Walker walker, double distance, int score) {
         this.name = walker.getName();
         this.dogSize = walker.getDogSize();
         this.distanceMeters = Math.round(distance); // 소수점 반올림
         this.matchScore = score;
+        this.setLatitude(walker.getLatitude());
+        this.setLongitude(walker.getLongitude());
     }
     
 	public int getMatchScore() {
@@ -50,5 +54,21 @@ public class WalkerResponse {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 }
